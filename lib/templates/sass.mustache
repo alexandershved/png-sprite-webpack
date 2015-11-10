@@ -18,8 +18,8 @@ ${{name}}: {{px.offset_x}} {{px.offset_y}} {{px.width}} {{px.height}}
 {{#items}}
 {{class}}
   +sprite(${{name}})
-  background-image: url('{{{escaped_image}}}.png')
+  background-image: url('~_images/{{{escaped_image}}}.png')
   @media screen and (-webkit-min-device-pixel-ratio: 2), screen and (min--moz-device-pixel-ratio: 2), screen and (-o-min-device-pixel-ratio: 2/1), screen and (min-device-pixel-ratio: 2), screen and (min-resolution: 192dpi), screen and (min-resolution: 2dppx)
-    background-image: url('{{{escaped_image}}}@2x.png')
+    background-image: url('~_images/{{{escaped_image}}}@2x.png')
 
 {{/items}}
