@@ -1,0 +1,37 @@
+{
+  "name": "png-sprite-webpack",
+  "version": "0.0.1",
+  "description": "png-sprite-webpack",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexandershved/png-sprite-webpack.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alexandershved/png-sprite-webpack/issues"
+  },
+  "keywords": [
+    "sprite",
+    "webpack",
+    "plugin",
+    "css",
+    "sass",
+    "less",
+    "stylus",
+    "png"
+  ],
+  "author": "alexandershved",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^1.4.2",
+    "color": "^0.10.1",
+    "cssesc": "^0.1.0",
+    "imageinfo": "^1.0.4",
+    "layout": "^2.2.0",
+    "lodash": "^3.10.1",
+    "lwip": "0.0.8",
+    "mkdirp": "^0.5.1",
+    "mustache": "^2.1.3",
+    "spritesheet-templates": "^10.0.0"
+  }
+}
