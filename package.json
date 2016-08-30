@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/alexandershved/png-sprite-webpack.git"
+    "url": "git+https://github.com/alexandershved/png-sprite-webpack.git"
   },
   "bugs": {
     "url": "https://github.com/alexandershved/png-sprite-webpack/issues"
@@ -20,7 +20,9 @@
     "stylus",
     "png"
   ],
-  "author": "alexandershved",
+  "author": {
+    "name": "alexandershved"
+  },
   "license": "MIT",
   "dependencies": {
     "async": "^1.4.2",
@@ -33,5 +35,13 @@
     "mkdirp": "^0.5.1",
     "mustache": "^2.1.3",
     "spritesheet-templates": "^10.0.0"
-  }
+  },
+  "gitHead": "7954c5beac9c4730f9853393729fecada3da5366",
+  "readme": "# png-sprite-webpack\npng-sprite-webpack\n",
+  "readmeFilename": "README.md",
+  "homepage": "https://github.com/alexandershved/png-sprite-webpack#readme",
+  "_id": "png-sprite-webpack@0.0.1",
+  "_shasum": "a0fd44124e672d90ab71565c79feff017c235a88",
+  "_from": "git+https://github.com/alexandershved/png-sprite-webpack.git#0.0.4",
+  "_resolved": "git+https://github.com/alexandershved/png-sprite-webpack.git#7954c5beac9c4730f9853393729fecada3da5366"
 }

@@ -1,34 +1,28 @@
 {{#items}}
-@{{name}}: {{px.offset_x}}, {{px.offset_y}}, {{px.width}}, {{px.height}};
+${{name}}: {{px.offset_x}} {{px.offset_y}} {{px.width}} {{px.height}} {{px.total_width}} {{px.total_height}};
 {{/items}}
 
-.sprite-width(@sprite) {
-  width: extract(@sprite, 3);
-}
-
-.sprite-height(@sprite) {
-  height: extract(@sprite, 4);
-}
-
-.sprite-position(@sprite) {
-  @sprite-offset-x: extract(@sprite, 1);
-  @sprite-offset-y: extract(@sprite, 2);
-  background-position: @sprite-offset-x  @sprite-offset-y;
-}
-
-.sprite(@sprite) {
-  .sprite-position(@sprite);
+.sprite($sprite) {
+  display: inline-block;
+  width: extract($sprite, 3);
+  height: extract($sprite, 4);
+  background-position: extract($sprite, 1) extract($sprite, 2);
   background-repeat: no-repeat;
-  overflow: hidden;
-  display: block;
-  .sprite-width(@sprite);
-  .sprite-height(@sprite);
+  background-size: extract($sprite, 5) extract($sprite, 6);
 }
 
 {{#items}}
 {{class}} {
-  background-image: url('{{{escaped_image}}}');
-  .sprite(@{{name}});
+  .sprite(${{name}});
+  background-image: url('~_images/{{{escaped_image}}}');
 }
 
+{{#escaped_image_2x}}
+@media screen and (min-device-pixel-ratio: 2), screen and (min-resolution: 192dpi), screen and (min-resolution: 2dppx) {
+  {{class}} {
+    background-image: url('~_images/{{{escaped_image_2x}}}');
+  }
+}
+{{/escaped_image_2x}}
+  
 {{/items}}

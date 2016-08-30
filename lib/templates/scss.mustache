@@ -1,22 +1,6 @@
 {{#items}}
-${{name}}: {{px.offset_x}} {{px.offset_y}} {{px.width}} {{px.height}};
+${{name}}: {{px.offset_x}} {{px.offset_y}} {{px.width}} {{px.height}} {{px.total_width}} {{px.total_height}};
 {{/items}}
-
-@mixin sprite-width($sprite) {
-  width: nth($sprite, 3);
-}
-
-@mixin sprite-height($sprite) {
-  height: nth($sprite, 4);
-}
-
-@function sprite-width($sprite) {
-  @return nth($sprite, 3);
-}
-
-@function sprite-height($sprite) {
-  @return nth($sprite, 4);
-}
 
 @mixin sprite-position($sprite) {
   $sprite-offset-x: nth($sprite, 1);
@@ -25,18 +9,26 @@ ${{name}}: {{px.offset_x}} {{px.offset_y}} {{px.width}} {{px.height}};
 }
 
 @mixin sprite($sprite) {
+  display: inline-block;
+  width: nth($sprite, 3);
+  height: nth($sprite, 4);
   @include sprite-position($sprite);
   background-repeat: no-repeat;
-  overflow: hidden;
-  display: inline-block;
-  @include sprite-width($sprite);
-  @include sprite-height($sprite);
+  background-size: nth($sprite, 5) nth($sprite, 6);
 }
 
 {{#items}}
 {{class}} {
   @include sprite(${{name}});
-  background-image: url('{{{escaped_image}}}');
+  background-image: url('~_images/{{{escaped_image}}}');
 }
 
+{{#escaped_image_2x}}
+@media screen and (min-device-pixel-ratio: 2), screen and (min-resolution: 192dpi), screen and (min-resolution: 2dppx) {
+  {{class}} {
+    background-image: url('~_images/{{{escaped_image_2x}}}');
+  }
+}
+{{/escaped_image_2x}}
+  
 {{/items}}
