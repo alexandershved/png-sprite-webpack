@@ -336,65 +336,56 @@ SpriteWebpackPlugin.prototype.apply = function(compiler) {
 
   util.checkDir(opts.outputImg);
 
-  compiler.plugin('emit', function(compilation, callback) {
-    var iteration = 0;
+  fill = function(ending, i) {
+    var index = 0;
+    var layer;
+    var length;
+    var checkError;
+    var pasteImage;
+    var addItem;
 
-    fill = function(ending, i) {
-      var index = 0;
-      var layer;
-      var length;
-      var checkError;
-      var pasteImage;
-      var addItem;
+    if (!opts.info[i]) {
+      return;
+    }
 
-      if (!opts.info[i]) {
-        return;
+    layer = opts.info[i];
+    length = layer.items.length;
+
+    checkError = function(err) {
+      if (err) {
+        throw err;
       }
-
-      layer = opts.info[i];
-      length = layer.items.length;
-
-      checkError = function(err) {
-        if (err) {
-          throw err;
-        }
-      };
-
-      pasteImage = function(err, canvas, img) {
-        checkError(err);
-
-        canvas.paste(layer.items[index].x, layer.items[index].y, img, function(_err, output) {
-          if (++index < length) {
-            addItem(_err, canvas);
-          } else {
-            output.writeFile(path.join(opts.outputImg, opts.name + ending + '.' + opts.format), function() {});
-            iteration++;
-
-            if (iteration === 2) {
-              callback();
-            }
-          }
-        });
-      };
-
-      addItem = function(err, canvas) {
-        checkError(err);
-
-        lwip.open(layer.items[index].meta.path, function(_err, img) {
-          pasteImage(_err, canvas, img);
-        });
-      };
-
-      lwip.create(
-        layer.width,
-        layer.height,
-        opts.color,
-        addItem
-      );
     };
 
-    _.forEach(['', opts.ending2x], fill);
-  });
+    pasteImage = function(err, canvas, img) {
+      checkError(err);
+
+      canvas.paste(layer.items[index].x, layer.items[index].y, img, function(_err, output) {
+        if (++index < length) {
+          addItem(_err, canvas);
+        } else {
+          output.writeFile(path.join(opts.outputImg, opts.name + ending + '.' + opts.format), function() {});
+        }
+      });
+    };
+
+    addItem = function(err, canvas) {
+      checkError(err);
+
+      lwip.open(layer.items[index].meta.path, function(_err, img) {
+        pasteImage(_err, canvas, img);
+      });
+    };
+
+    lwip.create(
+      layer.width,
+      layer.height,
+      opts.color,
+      addItem
+    );
+  };
+
+  _.forEach(['', opts.ending2x], fill);
 
   createStyles();
 };
