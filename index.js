@@ -16,20 +16,7 @@ function writeError(str) {
   process.stdout.write('\n\n\u001b[1m\u001b[31m' + str + '\u001b[39m\u001b[22m\n\n');
 }
 
-function initOpts(options) {
-  options.color = new color(options.background);
-
-  if (options.opacity === 0 && options.format === 'jpg') {
-    options.opacity = 1;
-  }
-
-  options.color = options.color.rgbArray();
-  options.color.push(options.opacity);
-
-  opts = _.assign({}, opts, options);
-}
-
-function checkSource() {
+function checkSource(opt) {
   var excludes = ['.DS_Store'];
   var flag = true;
   var filelist = [];
@@ -49,7 +36,7 @@ function checkSource() {
         res = util.skan(_path);
 
         _.forEach(res, function(items, dir) {
-          if (dir !== util.BaseDirName && !opts.multipath) {
+          if (dir !== util.BaseDirName && !opt.multipath) {
             return;
           }
 
@@ -68,13 +55,13 @@ function checkSource() {
   };
 
   try {
-    if (opts.source.indexOf(opts.source2x) !== -1) {
-      writeError('Folder with scalable images are in ' + opts.source);
+    if (opt.source.indexOf(opt.source2x) !== -1) {
+      writeError('Folder with scalable images are in ' + opt.source);
       flag = false;
     }
 
-    filelist = scanScaledImages(opts.source);
-    filelist2x = scanScaledImages(opts.source2x);
+    filelist = scanScaledImages(opt.source);
+    filelist2x = scanScaledImages(opt.source2x);
 
     if (_.isEmpty((_.pull(filelist, '.DS_Store')))) {
       flag = false;
@@ -91,13 +78,13 @@ function checkSource() {
           file = file.join('.') + _ending + '.' + ext;
 
           if (_list.indexOf(file) === -1) {
-            writeError('File ' + opts.source + _file + ' has no match in the ' + _path);
+            writeError('File ' + opt.source + _file + ' has no match in the ' + _path);
             flag = false;
           }
         });
       };
 
-      check(opts.source2x, filelist2x, opts.ending2x);
+      check(opt.source2x, filelist2x, opt.ending2x);
     }
   } catch(err) {
     throw err;
@@ -106,24 +93,24 @@ function checkSource() {
   return flag;
 }
 
-function updateLayer() {
+function updateLayer(opt) {
   var orientation;
   var layers = [];
 
-  if (opts.orientation === 'vertical') {
+  if (opt.orientation === 'vertical') {
     orientation = 'top-down';
-  } else if (opts.orientation === 'horizontal') {
+  } else if (opt.orientation === 'horizontal') {
     orientation = 'left-right';
   } else {
     orientation = 'binary-tree';
   }
 
-  _.forEach([opts.source, opts.source2x], function(source) {
+  _.forEach([opt.source, opt.source2x], function(source) {
     var images;
     var layer;
 
     if (source) {
-      images = getImages(source);
+      images = getImages(opt, source);
       layer = layout(orientation);
 
       _.forEach(images, function(image) {
@@ -148,13 +135,13 @@ function updateLayer() {
   return layers;
 }
 
-function getImages(source) {
+function getImages(opt, source) {
   var images = [];
   var excludes = ['.DS_Store'];
   var files = util.skan(source);
 
   _.forIn(files, function(dirFiles, dirName) {
-    if (dirName !== util.BaseDirName && !opts.multipath) {
+    if (dirName !== util.BaseDirName && !opt.multipath) {
       return;
     }
 
@@ -207,17 +194,17 @@ function collectImages(image) {
   }
 }
 
-function createStyles() {
-  var content = getStyles();
+function createStyles(opt) {
+  var content = getStyles(opt);
 
-  util.checkDir(opts.outputCss, function() {
+  util.checkDir(opt.outputCss, function() {
     var _path;
 
-    if (opts.processor === 'stylus') {
-      opts.processor = 'styl';
+    if (opt.processor === 'stylus') {
+      opt.processor = 'styl';
     }
 
-    _path = path.join(opts.outputCss, opts.name + '.' + opts.processor);
+    _path = path.join(opt.outputCss, opt.name + '.' + opt.processor);
 
     fs.writeFile(_path, content, function(err) {
       if (err) {
@@ -227,7 +214,7 @@ function createStyles() {
   });
 }
 
-function getStyles() {
+function getStyles(opt) {
   var names = [];
   var _path = '';
   var styles = [];
@@ -235,11 +222,11 @@ function getStyles() {
   var groups2x = [];
   var params;
 
-  if (!opts.resolvedPath) {
-    _path = path.relative(opts.outputCss, opts.outputImg);
+  if (!opt.resolvedPath) {
+    _path = path.relative(opt.outputCss, opt.outputImg);
   }
 
-  _.forEach(opts.info[0].items, function(item) {
+  _.forEach(opt.info[0].items, function(item) {
     var name = duplicateClassName(names, item.meta.name, item.meta.path);
 
     if (name) {
@@ -253,8 +240,8 @@ function getStyles() {
     }
   });
 
-  if (opts.source2x) {
-    _.forEach(opts.info[1].items, function(item, i) {
+  if (opt.source2x) {
+    _.forEach(opt.info[1].items, function(item, i) {
       var name = duplicateClassName(names, item.meta.name, item.meta.path);
 
       if (name) {
@@ -277,18 +264,18 @@ function getStyles() {
   params = {
     sprites: styles,
     spritesheet: {
-      width: opts.info[0].width,
-      height: opts.info[0].height,
-      image: path.join(_path, opts.name + '.' + opts.format)
+      width: opt.info[0].width,
+      height: opt.info[0].height,
+      image: path.join(_path, opt.name + '.' + opt.format)
     }
   };
 
-  if (opts.source2x) {
+  if (opt.source2x) {
     params.retina_sprites = styles2x;
     params.retina_spritesheet = {
-      width: opts.info[1].width,
-      height: opts.info[1].height,
-      image: path.join(_path, opts.name + opts.ending2x + '.' + opts.format)
+      width: opt.info[1].width,
+      height: opt.info[1].height,
+      image: path.join(_path, opt.name + opt.ending2x + '.' + opt.format)
     };
     params.retina_groups = groups2x;
   }
@@ -296,9 +283,9 @@ function getStyles() {
   return templater(params, {
     format: 'sprite',
     formatOpts: {
-      'cssClass': opts.prefix,
-      'processor': opts.processor,
-      'retina': opts.source2x ? opts.ending2x : false
+      'cssClass': opt.prefix,
+      'processor': opt.processor,
+      'retina': opt.source2x ? opt.ending2x : false
     }
   });
 }
@@ -318,23 +305,32 @@ function duplicateClassName(arr, name, _path) {
 }
 
 function SpriteWebpackPlugin(opt) {
-  this.options = _.assign(opts, opt);
+  var options = _.merge({}, opts);
+
+  this.options = _.assign(options, opt);
+  this.options.color = new color(this.options.background);
+
+  if (this.options.opacity === 0 && this.options.format === 'jpg') {
+    this.options.opacity = 1;
+  }
+
+  this.options.color = this.options.color.rgbArray();
+  this.options.color.push(this.options.opacity);
 }
 
 SpriteWebpackPlugin.prototype.apply = function(compiler) {
   var fill;
+  var self = this;
 
-  initOpts(this.options);
-
-  if (!checkSource()) {
+  if (!checkSource(this.options)) {
     return;
   }
 
-  if (!opts.info) {
-    opts.info = updateLayer();
+  if (!this.options.info) {
+    this.options.info = updateLayer(this.options);
   }
 
-  util.checkDir(opts.outputImg);
+  util.checkDir(this.options.outputImg);
 
   fill = function(ending, i) {
     var index = 0;
@@ -344,11 +340,11 @@ SpriteWebpackPlugin.prototype.apply = function(compiler) {
     var pasteImage;
     var addItem;
 
-    if (!opts.info[i]) {
+    if (!self.options.info[i]) {
       return;
     }
 
-    layer = opts.info[i];
+    layer = self.options.info[i];
     length = layer.items.length;
 
     checkError = function(err) {
@@ -364,7 +360,7 @@ SpriteWebpackPlugin.prototype.apply = function(compiler) {
         if (++index < length) {
           addItem(_err, canvas);
         } else {
-          output.writeFile(path.join(opts.outputImg, opts.name + ending + '.' + opts.format), function() {});
+          output.writeFile(path.join(self.options.outputImg, self.options.name + ending + '.' + self.options.format), function() {});
         }
       });
     };
@@ -380,14 +376,14 @@ SpriteWebpackPlugin.prototype.apply = function(compiler) {
     lwip.create(
       layer.width,
       layer.height,
-      opts.color,
+      self.options.color,
       addItem
     );
   };
 
-  _.forEach(['', opts.ending2x], fill);
+  _.forEach(['', this.options.ending2x], fill);
 
-  createStyles();
+  createStyles(this.options);
 };
 
 module.exports = SpriteWebpackPlugin;
